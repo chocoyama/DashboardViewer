@@ -1,0 +1,5 @@
+{
+  "enabledPlugins": {
+    "swift-tools@chocoyama-plugins": true
+  }
+}

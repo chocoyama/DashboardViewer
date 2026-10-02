@@ -6,7 +6,7 @@ struct DashboardViewerApp: App {
     @State private var library = DashboardLibrary()
 
     var body: some Scene {
-        Window("ダッシュボード一覧", id: "library") {
+        Window("ダッシュボード一覧", id: DashboardLibraryWindow.id) {
             DashboardLibraryView()
                 .environment(library)
         }

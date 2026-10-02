@@ -4,6 +4,7 @@ import SwiftUI
 struct DashboardLibraryView: View {
     @Environment(DashboardLibrary.self) private var library
     @Environment(\.openWindow) private var openWindow
+    @Environment(\.dismissWindow) private var dismissWindow
 
     var body: some View {
         Form {
@@ -36,7 +37,7 @@ struct DashboardLibraryView: View {
             }
             Spacer()
             Button("ログイン") { openWindow(value: dashboard) }
-            Button("開く") { openWindow(value: dashboard.id) }
+            Button("開く") { OpenDashboardAction(openWindow: openWindow, dismissWindow: dismissWindow)(dashboard.id) }
             Button("削除", systemImage: "trash", role: .destructive) {
                 library.remove(id: dashboard.id)
             }

@@ -8,6 +8,7 @@ struct DashboardLoginView: View {
 
     @Environment(DashboardLibrary.self) private var library
     @Environment(\.openWindow) private var openWindow
+    @Environment(\.dismissWindow) private var dismissWindow
     @Environment(\.dismiss) private var dismiss
     @State private var page = WebPage()
 
@@ -37,7 +38,7 @@ struct DashboardLoginView: View {
         if library.dashboard(id: dashboard.id) == nil {
             library.add(dashboard)
         }
-        openWindow(value: dashboard.id)
+        OpenDashboardAction(openWindow: openWindow, dismissWindow: dismissWindow)(dashboard.id)
         dismiss()
     }
 }

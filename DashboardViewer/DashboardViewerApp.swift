@@ -15,5 +15,12 @@ struct DashboardViewerApp: App {
             DashboardWindow(id: id)
                 .environment(library)
         }
+
+        WindowGroup("ログイン", for: Dashboard.self) { $dashboard in
+            if let dashboard {
+                DashboardLoginView(dashboard: dashboard)
+                    .environment(library)
+            }
+        }
     }
 }

@@ -16,7 +16,6 @@ struct DashboardWebView: View {
 
     var body: some View {
         WebView(page)
-            .frame(minWidth: 480, minHeight: 320)
             .task { page.load(dashboard.url) }
     }
 }

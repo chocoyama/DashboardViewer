@@ -15,6 +15,7 @@ struct DashboardViewerApp: App {
             DashboardWindow(id: id)
                 .environment(library)
         }
+        .windowStyle(.hiddenTitleBar)
 
         WindowGroup("ログイン", for: Dashboard.self) { $dashboard in
             if let dashboard {

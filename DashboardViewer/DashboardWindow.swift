@@ -1,10 +1,11 @@
 import DashboardKit
 import SwiftUI
+import WebKit
 
 struct DashboardWindow: View {
     @Environment(DashboardLibrary.self) private var library
     @State private var selection: Dashboard.ID?
-    @State private var loadedIDs: Set<Dashboard.ID> = []
+    @State private var pages: [Dashboard.ID: WebPage] = [:]
 
     init(id: Dashboard.ID?) {
         _selection = State(initialValue: id)
@@ -18,7 +19,7 @@ struct DashboardWindow: View {
         VStack(spacing: 0) {
             titleBarStrip
             if let selectedDashboard {
-                pages(showing: selectedDashboard)
+                webViews(showing: selectedDashboard)
                     .navigationTitle(selectedDashboard.name)
             } else {
                 ContentUnavailableView("ダッシュボードがありません", systemImage: "rectangle.dashed",
@@ -27,9 +28,16 @@ struct DashboardWindow: View {
         }
         .ignoresSafeArea(edges: .top)
         .frame(minWidth: 480, minHeight: 320)
-        .onChange(of: selectedDashboard?.id, initial: true) { _, id in
-            if let id { loadedIDs.insert(id) }
+        .onChange(of: selectedDashboard, initial: true) { _, dashboard in
+            if let dashboard, pages[dashboard.id] == nil {
+                pages[dashboard.id] = WebPage(dashboard: dashboard)
+            }
         }
+        .onReceive(NotificationCenter.default.loggedInDashboardIDs) { id in
+            pages[id]?.reload()
+        }
+        .focusedSceneValue(\.selectedDashboard, selectedDashboard)
+        .focusedSceneValue(\.selectedDashboardPage, selectedDashboard.flatMap { pages[$0.id] })
     }
 
     // 隠したタイトルバーの領域。信号機ボタンを避けて置き、ウインドウのドラッグ領域も兼ねる
@@ -42,13 +50,15 @@ struct DashboardWindow: View {
     }
 
     // 一度開いたページは保持し、タブを切り替えても再読み込みさせない
-    private func pages(showing selected: Dashboard) -> some View {
+    private func webViews(showing selected: Dashboard) -> some View {
         ZStack {
-            ForEach(library.dashboards.filter { loadedIDs.contains($0.id) }) { dashboard in
-                let isSelected = dashboard.id == selected.id
-                DashboardWebView(dashboard: dashboard)
-                    .opacity(isSelected ? 1 : 0)
-                    .allowsHitTesting(isSelected)
+            ForEach(library.dashboards) { dashboard in
+                if let page = pages[dashboard.id] {
+                    let isSelected = dashboard.id == selected.id
+                    DashboardWebView(dashboard: dashboard, page: page)
+                        .opacity(isSelected ? 1 : 0)
+                        .allowsHitTesting(isSelected)
+                }
             }
         }
     }

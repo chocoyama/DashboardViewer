@@ -38,6 +38,7 @@ struct DashboardLoginView: View {
         if library.dashboard(id: dashboard.id) == nil {
             library.add(dashboard)
         }
+        NotificationCenter.default.postDashboardLoginDidFinish(id: dashboard.id)
         OpenDashboardAction(openWindow: openWindow, dismissWindow: dismissWindow)(dashboard.id)
         dismiss()
     }

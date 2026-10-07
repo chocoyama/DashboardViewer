@@ -10,7 +10,7 @@ struct DashboardLibraryView: View {
         Form {
             Section("追加") {
                 DashboardForm(onAdd: { library.add($0) },
-                              onLogInThenAdd: { openWindow(value: $0) })
+                              onLogInThenAdd: { logIn(to: $0) })
             }
             Section("登録済み") {
                 if library.dashboards.isEmpty {
@@ -36,12 +36,16 @@ struct DashboardLibraryView: View {
                     .truncationMode(.middle)
             }
             Spacer()
-            Button("ログイン") { openWindow(value: dashboard) }
+            Button("ログイン") { logIn(to: dashboard) }
             Button("開く") { OpenDashboardAction(openWindow: openWindow, dismissWindow: dismissWindow)(dashboard.id) }
             Button("削除", systemImage: "trash", role: .destructive) {
                 library.remove(id: dashboard.id)
             }
             .labelStyle(.iconOnly)
         }
+    }
+
+    private func logIn(to dashboard: Dashboard) {
+        openWindow(value: DashboardLoginRequest(dashboard: dashboard, origin: .library))
     }
 }

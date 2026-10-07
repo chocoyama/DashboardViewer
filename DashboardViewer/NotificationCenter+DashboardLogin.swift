@@ -1,14 +1,13 @@
 import Combine
-import DashboardKit
 import Foundation
 
 extension NotificationCenter {
-    func postDashboardLoginDidFinish(id: Dashboard.ID) {
-        post(name: .dashboardLoginDidFinish, object: id)
+    func postDashboardLoginDidFinish(_ request: DashboardLoginRequest) {
+        post(name: .dashboardLoginDidFinish, object: request)
     }
 
-    var loggedInDashboardIDs: some Combine.Publisher<Dashboard.ID, Never> {
-        publisher(for: .dashboardLoginDidFinish).compactMap { $0.object as? Dashboard.ID }
+    var finishedDashboardLogins: some Combine.Publisher<DashboardLoginRequest, Never> {
+        publisher(for: .dashboardLoginDidFinish).compactMap { $0.object as? DashboardLoginRequest }
     }
 }
 

@@ -5,6 +5,7 @@ import SwiftUI
 struct DashboardTabBar: View {
     let dashboards: [Dashboard]
     @Binding var selection: Dashboard.ID?
+    let onMove: (_ id: Dashboard.ID, _ destinationID: Dashboard.ID) -> Void
     let onAdd: () -> Void
 
     var body: some View {
@@ -14,6 +15,13 @@ struct DashboardTabBar: View {
                     selection = dashboard.id
                 }
                 .keyboardShortcut(tabShortcut(at: index))
+                .contextMenu { InAppNavigationScopePicker(dashboard: dashboard) }
+                .draggable(dashboard.id.uuidString)
+                .dropDestination(for: String.self) { ids, _ in
+                    guard let id = ids.first.flatMap(UUID.init(uuidString:)) else { return false }
+                    onMove(id, dashboard.id)
+                    return true
+                }
             }
             Button("新しいタブ", systemImage: "plus", action: onAdd)
                 .labelStyle(.iconOnly)

@@ -26,10 +26,8 @@ struct DashboardLoginView: View {
     @ToolbarContentBuilder
     private var toolbar: some ToolbarContent {
         ToolbarItem(placement: .navigation) {
-            Button("戻る", systemImage: "chevron.backward") {
-                if let previous = page.backForwardList.backList.last { page.load(previous) }
-            }
-            .disabled(page.backForwardList.backList.isEmpty)
+            Button("戻る", systemImage: "chevron.backward") { page.goBack() }
+                .disabled(page.previousItem == nil)
         }
         ToolbarItem(placement: .primaryAction) {
             Button("ログイン完了") { finishLogin() }

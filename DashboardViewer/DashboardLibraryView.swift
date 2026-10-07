@@ -36,6 +36,10 @@ struct DashboardLibraryView: View {
                     .truncationMode(.middle)
             }
             Spacer()
+            InAppNavigationScopePicker(dashboard: dashboard)
+                .labelsHidden()
+                .fixedSize()
+                .help("アプリ内で開くページ")
             Button("ログイン") { logIn(to: dashboard) }
             Button("開く") { OpenDashboardAction(openWindow: openWindow, dismissWindow: dismissWindow)(dashboard.id) }
             Button("削除", systemImage: "trash", role: .destructive) {

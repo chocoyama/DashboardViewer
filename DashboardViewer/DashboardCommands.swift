@@ -3,6 +3,7 @@ import SwiftUI
 import WebKit
 
 struct DashboardCommands: Commands {
+    @FocusedValue(\.selectedDashboard) private var dashboard
     @FocusedValue(\.selectedDashboardLoginRequest) private var loginRequest
     @FocusedValue(\.selectedDashboardPage) private var page
     @FocusedBinding(\.isAddingDashboard) private var isAddingDashboard
@@ -17,6 +18,15 @@ struct DashboardCommands: Commands {
             Button("再読み込み") { page?.reload() }
                 .keyboardShortcut("r")
                 .disabled(page == nil)
+            Button("戻る") { page?.goBack() }
+                .keyboardShortcut("[")
+                .disabled(page?.previousItem == nil)
+            Button("ダッシュボードに戻る") {
+                if let dashboard { page?.load(dashboard.url) }
+            }
+            .keyboardShortcut("h", modifiers: [.command, .shift])
+            .disabled(page == nil || dashboard == nil)
+            Divider()
             Button("ログインし直す…") {
                 if let loginRequest { openWindow(value: loginRequest) }
             }

@@ -6,6 +6,7 @@ struct DashboardTabBar: View {
     let dashboards: [Dashboard]
     @Binding var selection: Dashboard.ID?
     let onMove: (_ id: Dashboard.ID, _ destinationID: Dashboard.ID) -> Void
+    let onReturnToDashboard: (Dashboard) -> Void
     let onAdd: () -> Void
 
     var body: some View {
@@ -15,6 +16,7 @@ struct DashboardTabBar: View {
                     selection = dashboard.id
                 }
                 .keyboardShortcut(tabShortcut(at: index))
+                .simultaneousGesture(TapGesture(count: 2).onEnded { onReturnToDashboard(dashboard) })
                 .contextMenu { InAppNavigationScopePicker(dashboard: dashboard) }
                 .draggable(dashboard.id.uuidString)
                 .dropDestination(for: String.self) { ids, _ in

@@ -62,6 +62,7 @@ struct DashboardWindow: View {
         DashboardTabBar(dashboards: library.dashboards.count > 1 ? library.dashboards : [],
                         selection: Binding(get: { selectedDashboard?.id }, set: { selection = $0 }),
                         onMove: library.move(id:toPositionOf:),
+                        onReturnToDashboard: { pages[$0.id]?.load($0.url) },
                         onAdd: { isAddingDashboard = true })
             .padding(.leading, 84)
             .padding(.trailing, 12)

@@ -30,6 +30,21 @@ public final class DashboardLibrary {
         save()
     }
 
+    public func update(_ dashboard: Dashboard) {
+        guard let index = dashboards.firstIndex(where: { $0.id == dashboard.id }) else { return }
+        dashboards[index] = dashboard
+        save()
+    }
+
+    public func move(id: Dashboard.ID, toPositionOf destinationID: Dashboard.ID) {
+        guard id != destinationID,
+              let source = dashboards.firstIndex(where: { $0.id == id }),
+              let destination = dashboards.firstIndex(where: { $0.id == destinationID })
+        else { return }
+        dashboards.insert(dashboards.remove(at: source), at: destination)
+        save()
+    }
+
     private func save() {
         // [Dashboard] は String・URL・UUID だけで構成されるため、エンコードは失敗しない
         defaults.set(try! JSONEncoder().encode(dashboards), forKey: Self.defaultsKey)

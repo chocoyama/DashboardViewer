@@ -28,6 +28,16 @@ struct DashboardNavigationDeciderTests {
         #expect(page.url == dashboardURL)
     }
 
+    @Test func 範囲内への新規ウインドウはブラウザへ回さずダッシュボードで開き直す() async throws {
+        let (page, opened) = try await loadedPage(scope: .sameHost)
+
+        _ = try await page.callJavaScript("document.getElementById('blank').click()")
+        try await waitUntil { !opened.reopenedURLs.isEmpty }
+
+        #expect(opened.reopenedURLs == [URL(string: "https://dashboard.test/blank")!])
+        #expect(opened.urls.isEmpty)
+    }
+
     @Test func アンカーリンクはダッシュボード内でスクロールする() async throws {
         let (page, opened) = try await loadedPage()
 
@@ -37,9 +47,12 @@ struct DashboardNavigationDeciderTests {
         #expect(opened.urls.isEmpty)
     }
 
-    private func loadedPage() async throws -> (WebPage, OpenedURLs) {
+    private func loadedPage(scope: InAppNavigationScope = .dashboardPage) async throws -> (WebPage, OpenedURLs) {
         let opened = OpenedURLs()
-        let decider = DashboardNavigationDecider(dashboardURL: dashboardURL) { opened.urls.append($0) }
+        let dashboard = Dashboard(name: "Dashboard", url: dashboardURL, inAppNavigationScope: scope)
+        let decider = DashboardNavigationDecider(currentDashboard: { dashboard },
+                                                 reopenInDashboard: { opened.reopenedURLs.append($0) },
+                                                 openInDefaultBrowser: { opened.urls.append($0) })
         let page = WebPage(navigationDecider: decider)
         // load(html:baseURL:) は decidePolicy を通らないため、ダッシュボードの URL として擬似応答を返す
         let response = HTTPURLResponse(url: dashboardURL, statusCode: 200, httpVersion: nil,
@@ -60,4 +73,5 @@ struct DashboardNavigationDeciderTests {
 @MainActor
 private final class OpenedURLs {
     var urls: [URL] = []
+    var reopenedURLs: [URL] = []
 }

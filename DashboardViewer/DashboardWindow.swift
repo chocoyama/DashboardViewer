@@ -31,8 +31,10 @@ struct DashboardWindow: View {
         .ignoresSafeArea(edges: .top)
         .frame(minWidth: 480, minHeight: 320)
         .onChange(of: selectedDashboard, initial: true) { _, dashboard in
+            // 先頭へのフォールバックで選ばれたものを確定させ、タブを並べ替えても表示中のタブが変わらないようにする
+            selection = dashboard?.id
             if let dashboard, pages[dashboard.id] == nil {
-                pages[dashboard.id] = WebPage(dashboard: dashboard)
+                pages[dashboard.id] = WebPage(dashboardID: dashboard.id, library: library)
             }
         }
         .onReceive(NotificationCenter.default.finishedDashboardLogins) { request in
@@ -41,6 +43,7 @@ struct DashboardWindow: View {
                 selection = request.dashboard.id
             }
         }
+        .focusedSceneValue(\.selectedDashboard, selectedDashboard)
         .focusedSceneValue(\.selectedDashboardLoginRequest, selectedDashboard.map {
             DashboardLoginRequest(dashboard: $0, origin: .dashboardWindow(windowID))
         })
@@ -58,6 +61,7 @@ struct DashboardWindow: View {
     private var titleBarStrip: some View {
         DashboardTabBar(dashboards: library.dashboards.count > 1 ? library.dashboards : [],
                         selection: Binding(get: { selectedDashboard?.id }, set: { selection = $0 }),
+                        onMove: library.move(id:toPositionOf:),
                         onAdd: { isAddingDashboard = true })
             .padding(.leading, 84)
             .padding(.trailing, 12)

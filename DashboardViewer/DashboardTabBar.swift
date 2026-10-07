@@ -5,6 +5,7 @@ import SwiftUI
 struct DashboardTabBar: View {
     let dashboards: [Dashboard]
     @Binding var selection: Dashboard.ID?
+    let onAdd: () -> Void
 
     var body: some View {
         HStack(spacing: 16) {
@@ -14,6 +15,11 @@ struct DashboardTabBar: View {
                 }
                 .keyboardShortcut(tabShortcut(at: index))
             }
+            Button("新しいタブ", systemImage: "plus", action: onAdd)
+                .labelStyle(.iconOnly)
+                .buttonStyle(.plain)
+                .foregroundStyle(.tertiary)
+                .help("新しいタブ")
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }

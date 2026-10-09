@@ -18,7 +18,7 @@ public struct DashboardNavigationDecider: WebPage.NavigationDeciding {
     public func decidePolicy(for action: WebPage.NavigationAction,
                              preferences: inout WebPage.NavigationPreferences) async -> WKNavigationActionPolicy {
         guard let destination = action.request.url, let dashboard = currentDashboard() else { return .cancel }
-        switch navigationRoute(to: destination, in: action.frame,
+        switch navigationRoute(to: destination, in: action.frame, isUserInitiated: action.isUserInitiated,
                                dashboardURL: dashboard.url, scope: dashboard.inAppNavigationScope) {
         case .stayInDashboard:
             return .allow
@@ -36,5 +36,9 @@ private extension WebPage.NavigationAction {
     var frame: NavigationFrame {
         guard let target else { return .newWindow }
         return target.isMainFrame ? .mainFrame : .subframe
+    }
+
+    var isUserInitiated: Bool {
+        navigationType == .linkActivated || navigationType == .formSubmitted
     }
 }

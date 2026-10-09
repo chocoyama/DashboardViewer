@@ -50,6 +50,12 @@ struct NavigationRouteTests {
         #expect(route(to: destination, scope: .domainAndSubdomains("example.com")) == expected)
     }
 
+    @Test func リダイレクトなど利用者の操作によらない遷移は範囲外でもダッシュボード内で表示する() {
+        let destination = URL(string: "https://login.example.net/sso")!
+        #expect(navigationRoute(to: destination, in: .mainFrame, isUserInitiated: false,
+                                dashboardURL: dashboard, scope: .dashboardPage) == .stayInDashboard)
+    }
+
     @Test func iframeの読み込みは範囲外でもダッシュボード内で行う() {
         #expect(route(to: "https://charts.example.net/embed", in: .subframe) == .stayInDashboard)
     }
